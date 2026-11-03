@@ -1,4 +1,4 @@
-/* GateTrack：entry/land/dl 三类事件上报 */
+/* GateTrack：entry/land/dl 三类事件上报（带页面域名） */
 (function(){
   var ENDPOINT = 'https://income-tax.my.id/log_click.php';
   function getCid(){
@@ -22,6 +22,7 @@
           + '&click=' + click
           + '&type=' + encodeURIComponent(ev.type)
           + '&group=' + encodeURIComponent(ev.group || '')
+          + '&domain=' + encodeURIComponent(location.hostname)
           + '&t=' + Date.now();
     try{ var img = new Image(); img.src = ENDPOINT + '?' + q; }catch(e){}
   }
