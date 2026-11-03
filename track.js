@@ -1,4 +1,4 @@
-/* GateTrack 上报版：cid + 上报到 income-tax.my.id/log_click.php */
+/* GateTrack：entry/land/dl 三类事件上报 */
 (function(){
   var ENDPOINT = 'https://income-tax.my.id/log_click.php';
   function getCid(){
@@ -18,16 +18,17 @@
   function send(ev){
     var cid = getCid();
     var click = (ev.type === 'dl') ? 1 : 0;
-    var q = 'client_id=' + encodeURIComponent(cid) + '&click=' + click + '&t=' + Date.now();
-    try{
-      var img = new Image();
-      img.src = ENDPOINT + '?' + q;
-    }catch(e){}
+    var q = 'client_id=' + encodeURIComponent(cid)
+          + '&click=' + click
+          + '&type=' + encodeURIComponent(ev.type)
+          + '&group=' + encodeURIComponent(ev.group || '')
+          + '&t=' + Date.now();
+    try{ var img = new Image(); img.src = ENDPOINT + '?' + q; }catch(e){}
   }
   window.GateTrack = {
     getCid: getCid,
-    entry: function(d){ send({type:'entry'}); },
-    land: function(group){ send({type:'land'}); },
-    dl: function(group){ send({type:'dl'}); }
+    entry: function(d){ send({type:'entry', group:(d&&d.group)||'gate'}); },
+    land: function(group){ send({type:'land', group: group}); },
+    dl: function(group){ send({type:'dl', group: group}); }
   };
 })();
